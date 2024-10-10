@@ -1,4 +1,5 @@
 using LibManage.Context;
+using LibManage.Middlewares;
 using LibManage.Repositories.Users;
 using LibManage.Services.UserServices;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
+
+app.UseMiddleware<HandleExceptionGlobalMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

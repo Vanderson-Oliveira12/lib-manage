@@ -5,6 +5,7 @@ using LibManage.Services.UserServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace LibManage.Controllers
 {
@@ -21,46 +22,41 @@ namespace LibManage.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetAll()
+        public async Task<ActionResult<ApiResponse<IEnumerable<ResponseUserDTO>>>> GetAll()
         {
-            try
+
+            var response = await _userService.GetAllUsersAsync();
+
+            if ( response.IsSucceeded )
             {
-
-                var users = await _userService.GetAllUsersAsync();
-
-                if ( users is null )
-                {
-                    return NotFound("Nenhum usuário registrado");
-                }
-
-                return Ok(users);
+                return Ok(response);
             }
-            catch ( Exception ex )
+            else if(response.StatusCode == 404)
             {
-                return BadRequest();
+                return NotFound(response);
+            } else
+            {
+                return BadRequest(response);
             }
+
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetById(Guid id)
+        public async Task<ActionResult<ApiResponse<ResponseUserDTO>>> GetById(Guid id)
         {
 
-            try
-            {
+            ApiResponse<ResponseUserDTO> response = await _userService.GetUserByIdAsync(id);
 
-                var user = await _userService.GetUserByIdAsync(id);
-
-                if ( user is null )
-                {
-                    return NotFound("Usuário não encontrado");
-                }
-
-                return Ok(user);
-
+            if ( response.IsSucceeded ) {
+                return Ok(response);
             }
-            catch ( Exception ex )
+            else if ( response.StatusCode == 404 )
             {
-                return BadRequest();
+                return NotFound(response);
+            }
+            else
+            {
+                return BadRequest(response);
             }
 
         }

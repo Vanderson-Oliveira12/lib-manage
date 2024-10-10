@@ -14,38 +14,51 @@ namespace LibManage.Services.UserServices
             _userRepository = userRepository;
         }
 
-        public async Task<IEnumerable<ResponseUserDTO>> GetAllUsersAsync()
+        public async Task<ApiResponse<IEnumerable<ResponseUserDTO>>> GetAllUsersAsync()
         {
 
-            var users = await _userRepository.GetAllAsync();
+            IEnumerable<User> users = await _userRepository.GetAllAsync();
 
-            IEnumerable<ResponseUserDTO> usersDTO = users.Select(user => new ResponseUserDTO
+
+            if ( users is null || !users.Any() ) {
+                return new ApiResponse<IEnumerable<ResponseUserDTO>>().Error(null, 404);
+            } else
             {
-                Id = user.Id,
-                Name = user.Name,
-                Phone = user.Phone,
-                Role = user.Role.ToString(),
-                Email = user.Email
-            }).ToList();
+                IEnumerable<ResponseUserDTO> usersDTO = users.Select(user => new ResponseUserDTO
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Phone = user.Phone,
+                    Role = user.Role.ToString(),
+                    Email = user.Email
+                });
 
-            return usersDTO;
+                return new ApiResponse<IEnumerable<ResponseUserDTO>>().Success(usersDTO.ToList());
+            }
         }
 
-        public async Task<ResponseUserDTO> GetUserByIdAsync(Guid id)
+        public async Task<ApiResponse<ResponseUserDTO>> GetUserByIdAsync(Guid id)
         {
 
             var user = await _userRepository.FindByIdAsync(id);
 
-            ResponseUserDTO userDTO = new ResponseUserDTO
+            if ( user == null )
             {
-                Id = user.Id,
-                Name = user.Name,
-                Phone = user.Phone,
-                Role = user.Role.ToString(),
-                Email = user.Email
-            };
+                return new ApiResponse<ResponseUserDTO>().Error(status: 404);
+            } else
+            {
+                ResponseUserDTO userDTO = new ResponseUserDTO
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Phone = user.Phone,
+                    Role = user.Role.ToString(),
+                    Email = user.Email
+                };
 
-            return userDTO;
+                return new ApiResponse<ResponseUserDTO>().Success(userDTO);
+            }
+
         }
 
         public async Task CreateUserAsync([FromBody] CreateUserDTO userDTO)
