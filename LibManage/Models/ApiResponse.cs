@@ -1,4 +1,6 @@
-﻿namespace LibManage.Models
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+
+namespace LibManage.Models
 {
     public class ApiResponse<T>
     {
@@ -7,9 +9,9 @@
         public string Message { get; set; }
         public int StatusCode { get; set; }
 
-        public List<string>? Errors { get; set; } = new List<string>();
+        public IEnumerable<string>? Errors { get; set; } = new List<string>();
 
-        public ApiResponse<T> Error(List<string>? errors = null, int status = 0, string message = "Nenhum registro encontrado")
+        public ApiResponse<T> Error(IEnumerable<string>? errors = null, int status = 0, string message = "Nenhum registro encontrado")
         {
 
             errors ??= new List<string>();
@@ -26,7 +28,8 @@
 
         public ApiResponse<T> Success(T data, int status = 200, string message = "OK")
         {
-            return new ApiResponse<T> {
+            return new ApiResponse<T>
+            {
                 Data = data,
                 IsSucceeded = true,
                 StatusCode = 200,

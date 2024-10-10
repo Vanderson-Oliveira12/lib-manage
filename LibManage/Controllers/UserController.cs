@@ -1,11 +1,8 @@
 ﻿using LibManage.DTOs.User;
+using LibManage.Extensions;
 using LibManage.Models;
-using LibManage.Repositories.Users;
 using LibManage.Services.UserServices;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace LibManage.Controllers
 {
@@ -15,10 +12,12 @@ namespace LibManage.Controllers
     {
 
         private readonly IUserService _userService;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -62,18 +61,25 @@ namespace LibManage.Controllers
         }
 
         [HttpPost()]
-
-        public async Task<ActionResult> Create([FromBody] CreateUserDTO userDTO)
+        public async Task<ActionResult<ApiResponse<CreateUserDTO>>> Create([FromBody] CreateUserDTO userDTO)
         {
 
             if ( !ModelState.IsValid )
             {
-                return BadRequest(ModelState);
+
+                return BadRequest(new ApiResponse<CreateUserDTO>().FromModelState(ModelState));
             }
 
-            await _userService.CreateUserAsync(userDTO);
+            var response = await _userService.CreateUserAsync(userDTO);
 
-            return Ok("Usuário criado com sucesso");
+            if(response.IsSucceeded)
+            {
+                return Ok(response);
+            } else
+            {
+                return BadRequest(response);
+
+            }
 
         }
 
@@ -101,17 +107,17 @@ namespace LibManage.Controllers
 
         public async Task<ActionResult> Delete(Guid id)
         {
+            
+            var response = await _userService.DeleteUserByIdAsync(id);
 
-            try
+            if(response.IsSucceeded )
             {
-                await _userService.DeleteUserAsync(id);
-
-                return Ok("Usuário deletado com sucesso!");
-            }
-            catch ( Exception ex )
+                return Ok(response);
+            } else
             {
-                return BadRequest();
+                return BadRequest(response);
             }
+         
         }
     }
 }

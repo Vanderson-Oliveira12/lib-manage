@@ -2,6 +2,7 @@ using LibManage.Context;
 using LibManage.Middlewares;
 using LibManage.Repositories.Users;
 using LibManage.Services.UserServices;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
 var connection = builder.Configuration.GetConnectionString("ConnectionDb");
 

@@ -2,6 +2,7 @@
 using LibManage.Repositories.Users;
 using Microsoft.AspNetCore.Mvc;
 using LibManage.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace LibManage.Services.UserServices
 {
@@ -61,8 +62,14 @@ namespace LibManage.Services.UserServices
 
         }
 
-        public async Task CreateUserAsync([FromBody] CreateUserDTO userDTO)
+        public async Task<ApiResponse<CreateUserDTO>> CreateUserAsync(CreateUserDTO userDTO)
         {
+
+            bool isEmailExists = await _userRepository.EmailExists(userDTO.Email);
+
+            if ( isEmailExists ) {
+                return new ApiResponse<CreateUserDTO>().Error(status: 400, message: "Email já registrado!");
+            }
 
             User user = new User
             {
@@ -72,6 +79,8 @@ namespace LibManage.Services.UserServices
             };
 
             await _userRepository.CreateAsync(user);
+
+            return new ApiResponse<CreateUserDTO>().Success(data: userDTO);
         }
 
         public async Task UpdateUserAsync(Guid id, [FromBody] UpdateUserDTO userDTO)
@@ -92,9 +101,19 @@ namespace LibManage.Services.UserServices
             await _userRepository.UpdateAsync(user);
         }
 
-        public async Task DeleteUserAsync(Guid id)
+        public async Task<ApiResponse<bool>> DeleteUserByIdAsync(Guid id)
         {
-            await _userRepository.DeleteAsync(id);
+
+            User user = await _userRepository.FindByIdAsync(id);
+
+            if(user is null)
+            {
+                return new ApiResponse<bool>().Error(status: 400, message: "Usuário não encontrado");
+            }
+
+            await _userRepository.DeleteAsync(user);
+
+            return new ApiResponse<bool>().Success(data: true, message: "Usuário deletado com sucesso");
         }
     }
 }

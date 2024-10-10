@@ -38,10 +38,8 @@ namespace LibManage.Repositories.Users
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(User user)
         {
-            var user = await _context.Users.FindAsync(id);
-
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }

@@ -9,7 +9,7 @@ namespace LibManage.Repositories.Users
         Task<User> FindByIdAsync(Guid id);
         Task CreateAsync(User user);
         Task UpdateAsync(User user);
-        Task DeleteAsync(Guid id);
+        Task DeleteAsync(User user);
         Task<bool> EmailExists(string email);
 
     }

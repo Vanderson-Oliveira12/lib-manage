@@ -7,8 +7,8 @@ namespace LibManage.Services.UserServices
     {
         Task<ApiResponse<IEnumerable<ResponseUserDTO>>> GetAllUsersAsync();
         Task<ApiResponse<ResponseUserDTO>> GetUserByIdAsync(Guid id);
-        Task CreateUserAsync(CreateUserDTO userDTO);
+        Task<ApiResponse<CreateUserDTO>> CreateUserAsync(CreateUserDTO userDTO);
         Task UpdateUserAsync(Guid id, UpdateUserDTO userDTO);
-        Task DeleteUserAsync(Guid id);
+        Task<ApiResponse<bool>> DeleteUserByIdAsync(Guid id);
     }
 }
