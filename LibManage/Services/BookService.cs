@@ -1,43 +1,49 @@
-﻿using LibManage.Models;
+﻿using AutoMapper;
+using LibManage.DTOs;
+using LibManage.Models;
 using LibManage.Repositories.Interfaces;
 using LibManage.Services.Interfaces;
-using System.Collections.Generic;
 
 namespace LibManage.Services
 {
     public class BookService : IBookService
     {
-
-
+        
         private readonly IBookRepository _bookRepository;
+        private readonly IMapper _mapper;
 
-        public BookService(IBookRepository bookRepository)
+        public BookService(IBookRepository bookRepository, IMapper mapper)
         {
             _bookRepository = bookRepository;
+            _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<Book>>> GetAllBookAsync()
+        public async Task<ApiResponse<IEnumerable<ResponseBookDTO>>> GetAllBookAsync()
         {
 
             IEnumerable<Book> books = await _bookRepository.GetAllAsync();
 
             if ( books == null || !books.Any() )
             {
-                return new ApiResponse<IEnumerable<Book>>().Error(status: 404);
+                return new ApiResponse<IEnumerable<ResponseBookDTO>>().Error(status: 404);
             }
 
-            return new ApiResponse<IEnumerable<Book>>().Success(data: books);
+            IEnumerable<ResponseBookDTO> booksListDTO = _mapper.Map<IEnumerable<ResponseBookDTO>>(books);
+
+            return new ApiResponse<IEnumerable<ResponseBookDTO>>().Success(data: booksListDTO);
         }
 
-        public async Task<ApiResponse<Book>> GetByIdBookAsync(Guid id)
+        public async Task<ApiResponse<ResponseBookDTO>> GetByIdBookAsync(Guid id)
         {
             Book book = await _bookRepository.GetByIdAsync(id);
 
             if ( book == null ) {
-                return new ApiResponse<Book>().Error(status: 404);
+                return new ApiResponse<ResponseBookDTO>().Error(status: 404);
             }
 
-            return new ApiResponse<Book>().Success(data: book);
+            ResponseBookDTO responseBookDTO = _mapper.Map<ResponseBookDTO>(book);
+
+            return new ApiResponse<ResponseBookDTO>().Success(data: responseBookDTO);
         }
 
         public async Task<ApiResponse<Book>> CreateBookAsync(Book book)

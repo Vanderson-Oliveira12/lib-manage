@@ -1,4 +1,4 @@
-﻿using LibManage.DTOs.User;
+﻿using LibManage.DTOs;
 using LibManage.Models;
 
 namespace LibManage.Services.Interfaces

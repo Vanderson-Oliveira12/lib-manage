@@ -1,14 +1,13 @@
 ﻿using LibManage.Enums;
 
-namespace LibManage.Models
+namespace LibManage.DTOs
 {
-    public class User
+    public class ResponseUserDTO
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
-        public ERole Role { get; set; } = ERole.ALUNO;
-
+        public string Role { get; set; } = ERole.ALUNO.ToString();
     }
 }

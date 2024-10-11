@@ -1,19 +1,22 @@
-﻿using LibManage.DTOs.User;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using LibManage.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using LibManage.Services.Interfaces;
 using LibManage.Repositories.Interfaces;
+using AutoMapper;
+using LibManage.DTOs;
 
 namespace LibManage.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<ApiResponse<IEnumerable<ResponseUserDTO>>> GetAllUsersAsync()
@@ -21,24 +24,14 @@ namespace LibManage.Services
 
             IEnumerable<User> users = await _userRepository.GetAllAsync();
 
-
             if (users is null || !users.Any())
             {
                 return new ApiResponse<IEnumerable<ResponseUserDTO>>().Error(null, 404);
             }
-            else
-            {
-                IEnumerable<ResponseUserDTO> usersDTO = users.Select(user => new ResponseUserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Phone = user.Phone,
-                    Role = user.Role.ToString(),
-                    Email = user.Email
-                });
 
-                return new ApiResponse<IEnumerable<ResponseUserDTO>>().Success(usersDTO.ToList());
-            }
+            IEnumerable<ResponseUserDTO> usersListDTO = _mapper.Map<IEnumerable<ResponseUserDTO>>(users).ToList();
+
+            return new ApiResponse<IEnumerable<ResponseUserDTO>>().Success(usersListDTO);
         }
 
         public async Task<ApiResponse<ResponseUserDTO>> GetUserByIdAsync(Guid id)
@@ -50,20 +43,10 @@ namespace LibManage.Services
             {
                 return new ApiResponse<ResponseUserDTO>().Error(status: 404);
             }
-            else
-            {
-                ResponseUserDTO userDTO = new ResponseUserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Phone = user.Phone,
-                    Role = user.Role.ToString(),
-                    Email = user.Email
-                };
 
-                return new ApiResponse<ResponseUserDTO>().Success(userDTO);
-            }
+            ResponseUserDTO userDTO = _mapper.Map<ResponseUserDTO>(user);
 
+            return new ApiResponse<ResponseUserDTO>().Success(userDTO);
         }
 
         public async Task<ApiResponse<CreateUserDTO>> CreateUserAsync(CreateUserDTO userDTO)
@@ -76,12 +59,7 @@ namespace LibManage.Services
                 return new ApiResponse<CreateUserDTO>().Error(status: 400, message: "Email já registrado!");
             }
 
-            User user = new User
-            {
-                Name = userDTO.Name,
-                Email = userDTO.Email,
-                Phone = userDTO.Phone,
-            };
+            User user = _mapper.Map<User>(userDTO);
 
             await _userRepository.CreateAsync(user);
 

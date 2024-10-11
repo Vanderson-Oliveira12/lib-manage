@@ -1,7 +1,7 @@
 ﻿using LibManage.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace LibManage.DTOs.User
+namespace LibManage.DTOs
 {
     public class CreateUserDTO
     {

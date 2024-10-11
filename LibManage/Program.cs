@@ -1,4 +1,5 @@
 using LibManage.Context;
+using LibManage.DTOs;
 using LibManage.Middlewares;
 using LibManage.Repositories;
 using LibManage.Repositories.Interfaces;
@@ -32,9 +33,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();  
 builder.Services.AddScoped<IBookService, BookService>();
 
-var app = builder.Build();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
+var app = builder.Build(); 
 
 app.UseMiddleware<HandleExceptionGlobalMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
