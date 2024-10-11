@@ -4,3 +4,22 @@ GET {{LibManage_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+PUT {{LibManage_HostAddress}}/api/users/02e3b37c-34a5-424a-9bd5-74ed4e4b8129
+Accept: application/json
+Content-Type: application/json
+{
+    
+}
+
+###
+GET {{LibManage_HostAddress}}/api/books
+Accept: application/json
+
+####
+
+GET {{LibManage_HostAddress}}/api/books/3d6ceeab-79af-4b8c-a615-9a4e090f1e0b
+
+#####
+
+DELETE {{LibManage_HostAddress}}/api/books/3d6ceeab-79af-4b8c-a615-9a4e090f1e0b

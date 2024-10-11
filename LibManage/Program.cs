@@ -1,7 +1,9 @@
 using LibManage.Context;
 using LibManage.Middlewares;
-using LibManage.Repositories.Users;
-using LibManage.Services.UserServices;
+using LibManage.Repositories;
+using LibManage.Repositories.Interfaces;
+using LibManage.Services;
+using LibManage.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +28,9 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connecti
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IBookRepository, BookRepository>();  
+builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 

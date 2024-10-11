@@ -1,7 +1,7 @@
 ﻿using LibManage.Models;
 using LibManage.DTOs.User;
 
-namespace LibManage.Repositories.Users
+namespace LibManage.Repositories.Interfaces
 {
     public interface IUserRepository
     {

@@ -1,10 +1,11 @@
 ﻿using LibManage.Context;
 using LibManage.DTOs.User;
 using LibManage.Models;
+using LibManage.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibManage.Repositories.Users
+namespace LibManage.Repositories
 {
     public class UserRepository : IUserRepository
     {
@@ -44,7 +45,8 @@ namespace LibManage.Repositories.Users
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> EmailExists(string email) {
+        public async Task<bool> EmailExists(string email)
+        {
             return await _context.Users.AnyAsync(user => user.Email == email);
         }
 

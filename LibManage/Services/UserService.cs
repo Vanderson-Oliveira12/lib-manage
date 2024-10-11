@@ -1,10 +1,11 @@
 ﻿using LibManage.DTOs.User;
-using LibManage.Repositories.Users;
 using Microsoft.AspNetCore.Mvc;
 using LibManage.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using LibManage.Services.Interfaces;
+using LibManage.Repositories.Interfaces;
 
-namespace LibManage.Services.UserServices
+namespace LibManage.Services
 {
     public class UserService : IUserService
     {
@@ -21,9 +22,11 @@ namespace LibManage.Services.UserServices
             IEnumerable<User> users = await _userRepository.GetAllAsync();
 
 
-            if ( users is null || !users.Any() ) {
+            if (users is null || !users.Any())
+            {
                 return new ApiResponse<IEnumerable<ResponseUserDTO>>().Error(null, 404);
-            } else
+            }
+            else
             {
                 IEnumerable<ResponseUserDTO> usersDTO = users.Select(user => new ResponseUserDTO
                 {
@@ -43,10 +46,11 @@ namespace LibManage.Services.UserServices
 
             var user = await _userRepository.FindByIdAsync(id);
 
-            if ( user == null )
+            if (user == null)
             {
                 return new ApiResponse<ResponseUserDTO>().Error(status: 404);
-            } else
+            }
+            else
             {
                 ResponseUserDTO userDTO = new ResponseUserDTO
                 {
@@ -67,7 +71,8 @@ namespace LibManage.Services.UserServices
 
             bool isEmailExists = await _userRepository.EmailExists(userDTO.Email);
 
-            if ( isEmailExists ) {
+            if (isEmailExists)
+            {
                 return new ApiResponse<CreateUserDTO>().Error(status: 400, message: "Email já registrado!");
             }
 
@@ -83,22 +88,29 @@ namespace LibManage.Services.UserServices
             return new ApiResponse<CreateUserDTO>().Success(data: userDTO);
         }
 
-        public async Task UpdateUserAsync(Guid id, [FromBody] UpdateUserDTO userDTO)
+        public async Task<ApiResponse<bool>> UpdateUserAsync(Guid id, UpdateUserDTO userDTO)
         {
 
             User user = await _userRepository.FindByIdAsync(id);
 
-            if ( !string.IsNullOrEmpty(userDTO.Name) )
+            if (user is null)
+            {
+                return new ApiResponse<bool>().Error(status: 400, message: "Usuário não encontrado");
+            }
+
+            if (!string.IsNullOrEmpty(userDTO.Name))
             {
                 user.Name = userDTO.Name;
             }
 
-            if ( !string.IsNullOrEmpty(userDTO.Email) )
+            if (!string.IsNullOrEmpty(userDTO.Email))
             {
                 user.Email = userDTO.Email;
             }
 
             await _userRepository.UpdateAsync(user);
+
+            return new ApiResponse<bool>().Success(data: true, message: "Usuário editado com sucesso");
         }
 
         public async Task<ApiResponse<bool>> DeleteUserByIdAsync(Guid id)
@@ -106,7 +118,7 @@ namespace LibManage.Services.UserServices
 
             User user = await _userRepository.FindByIdAsync(id);
 
-            if(user is null)
+            if (user is null)
             {
                 return new ApiResponse<bool>().Error(status: 400, message: "Usuário não encontrado");
             }

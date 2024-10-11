@@ -1,7 +1,7 @@
 ﻿using LibManage.DTOs.User;
 using LibManage.Extensions;
 using LibManage.Models;
-using LibManage.Services.UserServices;
+using LibManage.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibManage.Controllers
@@ -30,10 +30,11 @@ namespace LibManage.Controllers
             {
                 return Ok(response);
             }
-            else if(response.StatusCode == 404)
+            else if ( response.StatusCode == 404 )
             {
                 return NotFound(response);
-            } else
+            }
+            else
             {
                 return BadRequest(response);
             }
@@ -46,7 +47,8 @@ namespace LibManage.Controllers
 
             ApiResponse<ResponseUserDTO> response = await _userService.GetUserByIdAsync(id);
 
-            if ( response.IsSucceeded ) {
+            if ( response.IsSucceeded )
+            {
                 return Ok(response);
             }
             else if ( response.StatusCode == 404 )
@@ -72,10 +74,11 @@ namespace LibManage.Controllers
 
             var response = await _userService.CreateUserAsync(userDTO);
 
-            if(response.IsSucceeded)
+            if ( response.IsSucceeded )
             {
                 return Ok(response);
-            } else
+            }
+            else
             {
                 return BadRequest(response);
 
@@ -84,40 +87,42 @@ namespace LibManage.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(Guid id, UpdateUserDTO userDTO)
+        public async Task<ActionResult<ApiResponse<bool>>> Update(Guid id, [FromBody] UpdateUserDTO userDTO)
         {
-            try
+
+            if ( !ModelState.IsValid )
             {
-                await _userService.UpdateUserAsync(id, userDTO);
-
-                return Ok();
-
-            }
-            catch ( Exception err )
-            {
-
-                return BadRequest();
+                return BadRequest(new ApiResponse<bool>().FromModelState(ModelState));
             }
 
+            var response = await _userService.UpdateUserAsync(id, userDTO);
 
+            if ( response.IsSucceeded )
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
         }
 
 
         [HttpDelete("{id}")]
-
         public async Task<ActionResult> Delete(Guid id)
         {
-            
+
             var response = await _userService.DeleteUserByIdAsync(id);
 
-            if(response.IsSucceeded )
+            if ( response.IsSucceeded )
             {
                 return Ok(response);
-            } else
+            }
+            else
             {
                 return BadRequest(response);
             }
-         
+
         }
     }
 }
