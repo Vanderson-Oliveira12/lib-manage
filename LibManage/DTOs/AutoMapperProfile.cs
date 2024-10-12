@@ -7,7 +7,9 @@ namespace LibManage.DTOs
     {
         public AutoMapperProfile()
         {
+            CreateMap<Book, CreateBookDTO>().ReverseMap();
             CreateMap<Book, ResponseBookDTO>().ReverseMap();
+
             CreateMap<User, ResponseUserDTO>().ReverseMap();    
         }
     }

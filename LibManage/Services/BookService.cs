@@ -46,28 +46,42 @@ namespace LibManage.Services
             return new ApiResponse<ResponseBookDTO>().Success(data: responseBookDTO);
         }
 
-        public async Task<ApiResponse<Book>> CreateBookAsync(Book book)
+        public async Task<ApiResponse<CreateBookDTO>> CreateBookAsync(CreateBookDTO bookDTO)
         {
+
+            if ( int.IsNegative(bookDTO.Quantity) )
+            {
+                return new ApiResponse<CreateBookDTO>().Error(status: 400, message: "Não é possível registrar valores menor que 0");
+            }
+
+            Book book = _mapper.Map<Book>(bookDTO);
+
             await _bookRepository.CreateAsync(book);    
 
-            return new ApiResponse<Book>().Success(data: book);
+            return new ApiResponse<CreateBookDTO>().Success(data: bookDTO);
         }
 
-        public async Task<ApiResponse<bool>> UpdateBookAsync(Guid id, Book bookUpdated)
+        public async Task<ApiResponse<ResponseBookDTO>> UpdateBookAsync(Guid id, UpdateBookDTO bookUpdatedDTO)
         {
             Book bookExists = await _bookRepository.GetByIdAsync(id);
 
             if ( bookExists == null ) {
-                return new ApiResponse<bool>().Error(status: 400, message: "Registro não encontrado");
+                return new ApiResponse<ResponseBookDTO>().Error(status: 400, message: "Registro não encontrado");
             }
 
-            if ( !string.IsNullOrEmpty(bookUpdated.Title) ) {
-                bookExists.Title = bookUpdated.Title;
+            if ( !string.IsNullOrEmpty(bookUpdatedDTO.Title) ) {
+                bookExists.Title = bookUpdatedDTO.Title;
+            }
+
+            if ( !int.IsNegative(bookUpdatedDTO.quantity) ) {
+                bookExists.Quantity = bookUpdatedDTO.quantity;
             }
 
             await _bookRepository.UpdateAsync(bookExists);
 
-            return new ApiResponse<bool>().Success(data: true, message: "Atualizado com sucesso!");
+            var bookDTO = _mapper.Map<ResponseBookDTO>(bookExists);
+
+            return new ApiResponse<ResponseBookDTO>().Success(data: bookDTO, message: "Atualizado com sucesso!");
         }
 
         public async Task<ApiResponse<bool>> DeleteBookAsync(Guid id)

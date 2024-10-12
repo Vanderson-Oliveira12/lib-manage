@@ -1,7 +1,10 @@
-﻿using LibManage.Models;
+﻿using LibManage.DTOs;
+using LibManage.Extensions;
+using LibManage.Models;
 using LibManage.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LibManage.Controllers
 {
@@ -52,9 +55,14 @@ namespace LibManage.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] Book book)
+        public async Task<ActionResult> Create([FromBody] CreateBookDTO bookDTO)
         {
-            var response = await _bookService.CreateBookAsync(book);
+
+            if ( !ModelState.IsValid ) {
+                return BadRequest(new ApiResponse<CreateBookDTO>().FromModelState(ModelState));
+            }
+
+            var response = await _bookService.CreateBookAsync(bookDTO);
 
             if ( response.IsSucceeded ) {
                 return Ok(response);
@@ -64,9 +72,9 @@ namespace LibManage.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(Guid id,[FromBody] Book book)
+        public async Task<ActionResult> Update(Guid id,[FromBody] UpdateBookDTO bookUpdateDTO)
         {
-            var response = await _bookService.UpdateBookAsync(id, book);
+            var response = await _bookService.UpdateBookAsync(id, bookUpdateDTO);
 
             if ( response.IsSucceeded )
             {

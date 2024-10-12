@@ -68,7 +68,6 @@ namespace LibManage.Controllers
 
             if ( !ModelState.IsValid )
             {
-
                 return BadRequest(new ApiResponse<CreateUserDTO>().FromModelState(ModelState));
             }
 

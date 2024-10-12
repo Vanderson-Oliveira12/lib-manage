@@ -1,5 +1,4 @@
 ﻿using LibManage.Models;
-using LibManage.DTOs.User;
 
 namespace LibManage.Repositories.Interfaces
 {
