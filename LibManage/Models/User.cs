@@ -10,5 +10,6 @@ namespace LibManage.Models
         public string? Phone { get; set; }
         public ERole Role { get; set; } = ERole.ALUNO;
 
+        public IEnumerable<Loan> Loans { get; set; } = new List<Loan>();
     }
 }

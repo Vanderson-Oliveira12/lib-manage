@@ -66,14 +66,14 @@ namespace LibManage.Services
             return new ApiResponse<CreateUserDTO>().Success(data: userDTO);
         }
 
-        public async Task<ApiResponse<bool>> UpdateUserAsync(Guid id, UpdateUserDTO userDTO)
+        public async Task<ApiResponse<UpdateUserDTO>> UpdateUserAsync(Guid id, UpdateUserDTO userDTO)
         {
 
             User user = await _userRepository.FindByIdAsync(id);
 
             if (user is null)
             {
-                return new ApiResponse<bool>().Error(status: 400, message: "Usuário não encontrado");
+                return new ApiResponse<UpdateUserDTO>().Error(status: 400, message: "Usuário não encontrado");
             }
 
             if (!string.IsNullOrEmpty(userDTO.Name))
@@ -88,7 +88,7 @@ namespace LibManage.Services
 
             await _userRepository.UpdateAsync(user);
 
-            return new ApiResponse<bool>().Success(data: true, message: "Usuário editado com sucesso");
+            return new ApiResponse<UpdateUserDTO>().Success(data: userDTO, message: "Usuário editado com sucesso");
         }
 
         public async Task<ApiResponse<bool>> DeleteUserByIdAsync(Guid id)

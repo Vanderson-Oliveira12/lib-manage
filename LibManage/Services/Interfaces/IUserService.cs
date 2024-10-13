@@ -8,7 +8,7 @@ namespace LibManage.Services.Interfaces
         Task<ApiResponse<IEnumerable<ResponseUserDTO>>> GetAllUsersAsync();
         Task<ApiResponse<ResponseUserDTO>> GetUserByIdAsync(Guid id);
         Task<ApiResponse<CreateUserDTO>> CreateUserAsync(CreateUserDTO userDTO);
-        Task<ApiResponse<bool>> UpdateUserAsync(Guid id, UpdateUserDTO userDTO);
+        Task<ApiResponse<UpdateUserDTO>> UpdateUserAsync(Guid id, UpdateUserDTO userDTO);
         Task<ApiResponse<bool>> DeleteUserByIdAsync(Guid id);
     }
 }
